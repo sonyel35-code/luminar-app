@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -15,108 +18,158 @@ import {
   Heart,
   TrendingUp,
   Award,
+  Menu,
+  X,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════
-   Luminar — Página Principal v2.0
-   Branding: Teal / Verde / Azul–Marino Educativo
+   Luminar — Página Principal v2.1 (Responsive)
+   Mobile-First: 320px → 768px → 1024px → 1280px+
    ═══════════════════════════════════════════════════ */
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: '/', label: 'Inicio', active: true },
+    { href: '/about', label: 'Nosotros' },
+    { href: '/programs', label: 'Programas' },
+    { href: '/student-life', label: 'Comunidad' },
+    { href: '/contact', label: 'Contacto' },
+  ];
+
   return (
     <div className="flex flex-col min-h-screen bg-animated-mesh">
+
       {/* ────────── Header ────────── */}
-      <header className="sticky top-0 z-50 w-full glass-panel border-b px-6 py-4">
+      <header
+        className="sticky top-0 z-50 w-full glass-panel border-b"
+        style={{ paddingBlock: '0.875rem', position: 'relative' }}
+      >
         <div className="container-7xl flex-between">
+
           {/* Logo */}
-          <div className="flex-center" style={{ gap: '0.75rem' }}>
+          <div className="flex-center" style={{ gap: '0.65rem' }}>
             <div
               style={{
                 padding: '0.35rem',
                 borderRadius: 'var(--radius-sm)',
                 background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
                 boxShadow: '0 4px 12px rgba(13,148,136,0.25)',
+                flexShrink: 0,
               }}
             >
-              <Image src="/logo.png" alt="Luminar Logo" width={30} height={30} priority />
+              <Image src="/logo.png" alt="Luminar Logo" width={28} height={28} priority />
             </div>
             <h1
               className="text-gradient"
-              style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em' }}
+              style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: 800, letterSpacing: '-0.03em' }}
             >
               Luminar
             </h1>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden md:block">
-            <ul className="flex-center" style={{ gap: '2.5rem' }}>
-              <li>
-                <Link
-                  href="/"
-                  style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--primary)' }}
-                >
-                  Inicio
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--muted-foreground)' }}
-                >
-                  Nosotros
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/programs"
-                  style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--muted-foreground)' }}
-                >
-                  Programas
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/student-life"
-                  style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--muted-foreground)' }}
-                >
-                  Comunidad
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--muted-foreground)' }}
-                >
-                  Contacto
-                </Link>
-              </li>
+          {/* Desktop Navigation */}
+          <nav className="hide-mobile" style={{ display: 'none' }} aria-label="Navegación principal">
+            {/* override hide-mobile to flex for md+ via css class */}
+          </nav>
+          <nav
+            aria-label="Navegación principal"
+            style={{
+              display: 'none',
+            }}
+            className="hide-mobile"
+          >
+            <ul className="flex-center" style={{ gap: '2rem' }}>
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: link.active ? 600 : 500,
+                      color: link.active ? 'var(--primary)' : 'var(--muted-foreground)',
+                      transition: 'color 0.2s ease',
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
-          {/* CTA Button */}
-          <div className="flex-center" style={{ gap: '1rem' }}>
+          {/* Right actions */}
+          <div className="flex-center" style={{ gap: '0.75rem' }}>
+            {/* CTA — desktop */}
             <Link
               href="/login"
-              className="btn-futuristic"
+              className="btn-futuristic hide-mobile"
               style={{
-                padding: '0.625rem 1.5rem',
+                padding: '0.625rem 1.35rem',
                 borderRadius: '2rem',
                 fontSize: '0.875rem',
                 fontWeight: 700,
+                display: 'none', /* overridden by .hide-mobile */
               }}
             >
               Entrar al Portal
             </Link>
+
+            {/* Hamburger — mobile only */}
+            <button
+              className={`hamburger-btn show-mobile${mobileMenuOpen ? ' open' : ''}`}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={mobileMenuOpen}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Navigation */}
+        <nav className={`mobile-nav${mobileMenuOpen ? ' open' : ''}`} aria-label="Menú móvil">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                color: link.active ? 'var(--primary)' : 'var(--foreground)',
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link
+            href="/login"
+            onClick={() => setMobileMenuOpen(false)}
+            className="btn-futuristic"
+            style={{
+              display: 'block',
+              textAlign: 'center',
+              padding: '0.875rem',
+              borderRadius: 'var(--radius-md)',
+              fontWeight: 700,
+              marginTop: '0.75rem',
+              fontSize: '1rem',
+            }}
+          >
+            Entrar al Portal
+          </Link>
+        </nav>
       </header>
 
       {/* ────────── Main ────────── */}
       <main className="flex-1">
+
         {/* ═══ Hero Section ═══ */}
-        <section style={{ position: 'relative', paddingBlock: '5rem 7rem' }}>
-          <div className="container-7xl grid-2" style={{ alignItems: 'center', gap: '4rem' }}>
+        <section style={{ position: 'relative', paddingBlock: 'clamp(3rem, 8vw, 6rem) clamp(4rem, 10vw, 8rem)' }}>
+          <div className="container-7xl grid-2" style={{ alignItems: 'center', gap: 'clamp(2rem, 5vw, 4rem)' }}>
+
             {/* Left Column — Text */}
             <div style={{ position: 'relative', zIndex: 10 }}>
               <div
@@ -129,23 +182,24 @@ export default function Home() {
                   backgroundColor: 'rgba(13, 148, 136, 0.08)',
                   border: '1px solid rgba(13, 148, 136, 0.2)',
                   color: 'var(--primary)',
-                  fontSize: '0.75rem',
+                  fontSize: '0.7rem',
                   fontWeight: 700,
-                  marginBottom: '1.5rem',
+                  marginBottom: '1.25rem',
                   letterSpacing: '0.04em',
+                  flexWrap: 'nowrap',
                 }}
               >
-                <Sparkles size={14} />
+                <Sparkles size={13} />
                 ECOSISTEMA EDUCATIVO INTELIGENTE
               </div>
 
               <h2
                 style={{
-                  fontSize: 'clamp(2.75rem, 5vw, 4.25rem)',
+                  fontSize: 'clamp(2rem, 6vw, 4.25rem)',
                   fontWeight: 900,
-                  lineHeight: 1.05,
+                  lineHeight: 1.08,
                   color: 'var(--foreground)',
-                  marginBottom: '1.5rem',
+                  marginBottom: '1.25rem',
                   letterSpacing: '-0.04em',
                 }}
               >
@@ -157,9 +211,9 @@ export default function Home() {
 
               <p
                 style={{
-                  fontSize: '1.125rem',
+                  fontSize: 'clamp(0.95rem, 2vw, 1.125rem)',
                   color: 'var(--muted-foreground)',
-                  marginBottom: '2.5rem',
+                  marginBottom: '2rem',
                   maxWidth: '540px',
                   lineHeight: 1.7,
                 }}
@@ -169,29 +223,29 @@ export default function Home() {
               </p>
 
               {/* CTA Buttons */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.875rem' }}>
                 <Link
                   href="/login"
                   className="btn-futuristic"
                   style={{
-                    padding: '1rem 2.5rem',
+                    padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2.5rem)',
                     borderRadius: 'var(--radius-md)',
-                    fontSize: '1.05rem',
+                    fontSize: 'clamp(0.9rem, 2vw, 1.05rem)',
                     fontWeight: 800,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.75rem',
+                    gap: '0.65rem',
                   }}
                 >
-                  Comenzar Ahora <ArrowRight size={20} />
+                  Comenzar Ahora <ArrowRight size={18} />
                 </Link>
                 <Link
                   href="/contact"
                   className="glass-panel"
                   style={{
-                    padding: '1rem 2.5rem',
+                    padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2.5rem)',
                     borderRadius: 'var(--radius-md)',
-                    fontSize: '1.05rem',
+                    fontSize: 'clamp(0.9rem, 2vw, 1.05rem)',
                     fontWeight: 700,
                     color: 'var(--foreground)',
                     display: 'flex',
@@ -199,28 +253,28 @@ export default function Home() {
                     gap: '0.5rem',
                   }}
                 >
-                  <BookOpen size={18} /> Saber Más
+                  <BookOpen size={17} /> Saber Más
                 </Link>
               </div>
 
               {/* Social Proof */}
               <div
                 style={{
-                  marginTop: '3rem',
+                  marginTop: '2.5rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '1.25rem',
+                  gap: '1rem',
                   flexWrap: 'wrap',
                 }}
               >
                 <div style={{ display: 'flex', gap: '2px' }}>
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} size={16} fill="var(--warning)" color="var(--warning)" />
+                    <Star key={i} size={15} fill="var(--warning)" color="var(--warning)" />
                   ))}
                 </div>
                 <span
                   style={{
-                    fontSize: '0.875rem',
+                    fontSize: '0.85rem',
                     fontWeight: 600,
                     color: 'var(--muted-foreground)',
                   }}
@@ -230,14 +284,15 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column — Hero Image */}
-            <div style={{ position: 'relative' }}>
+            {/* Right Column — Hero Image (hidden on small mobile) */}
+            <div
+              style={{ position: 'relative' }}
+            >
               <div
                 style={{
                   position: 'absolute',
                   inset: '-2rem',
-                  background:
-                    'radial-gradient(circle, rgba(13, 148, 136, 0.12) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(13, 148, 136, 0.12) 0%, transparent 70%)',
                   filter: 'blur(40px)',
                 }}
               />
@@ -246,8 +301,8 @@ export default function Home() {
                 style={{
                   position: 'relative',
                   backgroundColor: 'white',
-                  padding: '0.75rem',
-                  borderRadius: '2rem',
+                  padding: 'clamp(0.4rem, 1.5vw, 0.75rem)',
+                  borderRadius: 'clamp(1rem, 3vw, 2rem)',
                   boxShadow: '0 25px 60px -12px rgba(13, 148, 136, 0.15)',
                   border: '1px solid rgba(255, 255, 255, 0.5)',
                 }}
@@ -258,7 +313,7 @@ export default function Home() {
                   width={600}
                   height={500}
                   style={{
-                    borderRadius: '1.5rem',
+                    borderRadius: 'clamp(0.75rem, 2vw, 1.5rem)',
                     display: 'block',
                     width: '100%',
                     height: 'auto',
@@ -274,20 +329,30 @@ export default function Home() {
         {/* ═══ Trusted By Strip ═══ */}
         <section
           style={{
-            paddingBlock: '2.5rem',
+            paddingBlock: '2rem',
             borderBlock: '1px solid var(--border)',
             backgroundColor: 'rgba(255,255,255,0.3)',
             backdropFilter: 'blur(12px)',
           }}
         >
-          <div className="container-7xl flex-center" style={{ gap: '3rem', flexWrap: 'wrap' }}>
+          <div
+            className="container-7xl"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 'clamp(1.25rem, 4vw, 3rem)',
+              flexWrap: 'wrap',
+            }}
+          >
             <span
               style={{
-                fontSize: '0.8rem',
+                fontSize: '0.75rem',
                 fontWeight: 700,
                 color: 'var(--muted-foreground)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
+                flexShrink: 0,
               }}
             >
               Confiado por
@@ -296,7 +361,7 @@ export default function Home() {
               <span
                 key={org}
                 style={{
-                  fontSize: '0.95rem',
+                  fontSize: 'clamp(0.8rem, 2vw, 0.95rem)',
                   fontWeight: 700,
                   color: 'var(--muted-foreground)',
                   opacity: 0.5,
@@ -314,15 +379,15 @@ export default function Home() {
           style={{
             backgroundColor: 'rgba(255,255,255,0.5)',
             backdropFilter: 'blur(20px)',
-            paddingBlock: '6rem',
+            paddingBlock: 'clamp(3.5rem, 8vw, 6rem)',
           }}
         >
           <div className="container-7xl">
-            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 5vw, 4rem)' }}>
               <div className="section-divider" />
               <h2
                 style={{
-                  fontSize: '2.5rem',
+                  fontSize: 'clamp(1.6rem, 4vw, 2.5rem)',
                   fontWeight: 800,
                   color: 'var(--foreground)',
                   marginBottom: '1rem',
@@ -334,33 +399,32 @@ export default function Home() {
               <p
                 style={{
                   color: 'var(--muted-foreground)',
-                  fontSize: '1.125rem',
+                  fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
                   maxWidth: '600px',
                   marginInline: 'auto',
                   lineHeight: 1.6,
                 }}
               >
-                Herramientas de última generación para una comunidad educativa conectada y
-                empoderada.
+                Herramientas de última generación para una comunidad educativa conectada y empoderada.
               </p>
             </div>
 
             <div className="grid-3">
               {[
                 {
-                  icon: <BarChart3 size={32} color="var(--primary)" />,
+                  icon: <BarChart3 size={30} color="var(--primary)" />,
                   title: 'Análisis Inteligente',
                   desc: 'Métricas de rendimiento en tiempo real para identificar oportunidades antes de que se conviertan en retos académicos.',
                   badge: 'Tiempo Real',
                 },
                 {
-                  icon: <Shield size={32} color="var(--success)" />,
+                  icon: <Shield size={30} color="var(--success)" />,
                   title: 'Seguridad Total',
                   desc: 'Datos académicos y personales protegidos con los estándares criptográficos más altos. Cumplimiento FERPA & COPPA.',
                   badge: 'Zero Trust',
                 },
                 {
-                  icon: <GraduationCap size={32} color="var(--accent)" />,
+                  icon: <GraduationCap size={30} color="var(--accent)" />,
                   title: 'Éxito Estudiantil',
                   desc: 'Perfiles personalizados y seguimiento de competencias humanas que fomentan el desarrollo integral del estudiante.',
                   badge: 'Personalizado',
@@ -370,12 +434,12 @@ export default function Home() {
                   <div
                     className="flex-center"
                     style={{
-                      width: '64px',
-                      height: '64px',
+                      width: '60px',
+                      height: '60px',
                       borderRadius: '1.25rem',
                       backgroundColor: 'var(--muted)',
                       marginInline: 'auto',
-                      marginBottom: '1.5rem',
+                      marginBottom: '1.25rem',
                     }}
                   >
                     {item.icon}
@@ -396,14 +460,14 @@ export default function Home() {
                   >
                     {item.badge}
                   </span>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', fontWeight: 700, marginBottom: '0.75rem' }}>
                     {item.title}
                   </h3>
                   <p
                     style={{
                       color: 'var(--muted-foreground)',
                       lineHeight: 1.65,
-                      fontSize: '0.95rem',
+                      fontSize: 'clamp(0.875rem, 1.8vw, 0.95rem)',
                     }}
                   >
                     {item.desc}
@@ -415,13 +479,13 @@ export default function Home() {
         </section>
 
         {/* ═══ Statistics Section ═══ */}
-        <section style={{ paddingBlock: '5rem' }}>
+        <section style={{ paddingBlock: 'clamp(3rem, 7vw, 5rem)' }}>
           <div className="container-7xl">
-            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3.5rem)' }}>
               <div className="section-divider" />
               <h2
                 style={{
-                  fontSize: '2.25rem',
+                  fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
                   fontWeight: 800,
                   color: 'var(--foreground)',
                   letterSpacing: '-0.03em',
@@ -433,44 +497,28 @@ export default function Home() {
 
             <div className="grid-4">
               {[
-                {
-                  icon: <Users size={28} color="var(--primary)" />,
-                  value: '+500',
-                  label: 'Estudiantes',
-                },
-                {
-                  icon: <Award size={28} color="var(--accent)" />,
-                  value: '+50',
-                  label: 'Docentes',
-                },
-                {
-                  icon: <Heart size={28} color="var(--error)" />,
-                  value: '98%',
-                  label: 'Satisfacción',
-                },
-                {
-                  icon: <TrendingUp size={28} color="var(--success)" />,
-                  value: '+100',
-                  label: 'Cursos Activos',
-                },
+                { icon: <Users size={26} color="var(--primary)" />, value: '+500', label: 'Estudiantes' },
+                { icon: <Award size={26} color="var(--accent)" />, value: '+50', label: 'Docentes' },
+                { icon: <Heart size={26} color="var(--error)" />, value: '98%', label: 'Satisfacción' },
+                { icon: <TrendingUp size={26} color="var(--success)" />, value: '+100', label: 'Cursos Activos' },
               ].map((stat, i) => (
                 <div key={i} className="stat-card">
                   <div
                     className="flex-center"
                     style={{
-                      width: '56px',
-                      height: '56px',
+                      width: '52px',
+                      height: '52px',
                       borderRadius: '50%',
                       backgroundColor: 'var(--muted)',
                       marginInline: 'auto',
-                      marginBottom: '1.25rem',
+                      marginBottom: '1.125rem',
                     }}
                   >
                     {stat.icon}
                   </div>
                   <div
                     style={{
-                      fontSize: '2.5rem',
+                      fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
                       fontWeight: 900,
                       color: 'var(--foreground)',
                       letterSpacing: '-0.04em',
@@ -482,7 +530,7 @@ export default function Home() {
                   </div>
                   <div
                     style={{
-                      fontSize: '0.95rem',
+                      fontSize: '0.9rem',
                       fontWeight: 600,
                       color: 'var(--muted-foreground)',
                     }}
@@ -498,21 +546,21 @@ export default function Home() {
         {/* ═══ Why Luminar Section ═══ */}
         <section
           style={{
-            paddingBlock: '6rem',
+            paddingBlock: 'clamp(3.5rem, 8vw, 6rem)',
             backgroundColor: 'rgba(255,255,255,0.4)',
             backdropFilter: 'blur(16px)',
             borderBlock: '1px solid var(--border)',
           }}
         >
-          <div className="container-7xl grid-2" style={{ alignItems: 'center', gap: '4rem' }}>
+          <div className="container-7xl grid-2" style={{ alignItems: 'center', gap: 'clamp(2rem, 5vw, 4rem)' }}>
             <div>
               <div className="section-divider" style={{ marginInline: '0' }} />
               <h2
                 style={{
-                  fontSize: '2.25rem',
+                  fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
                   fontWeight: 800,
                   color: 'var(--foreground)',
-                  marginBottom: '1.5rem',
+                  marginBottom: '1.25rem',
                   letterSpacing: '-0.03em',
                 }}
               >
@@ -521,9 +569,9 @@ export default function Home() {
               <p
                 style={{
                   color: 'var(--muted-foreground)',
-                  fontSize: '1.05rem',
+                  fontSize: 'clamp(0.9rem, 2vw, 1.05rem)',
                   lineHeight: 1.7,
-                  marginBottom: '2rem',
+                  marginBottom: '1.75rem',
                   maxWidth: '480px',
                 }}
               >
@@ -532,7 +580,7 @@ export default function Home() {
                 comunidad educativa alcance su máximo potencial.
               </p>
 
-              <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
                 {[
                   'Dashboard personalizado para cada rol',
                   'Comunicación segura entre docentes y familias',
@@ -544,17 +592,18 @@ export default function Home() {
                     key={i}
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       gap: '0.75rem',
-                      fontSize: '0.95rem',
+                      fontSize: 'clamp(0.875rem, 2vw, 0.95rem)',
                       color: 'var(--foreground)',
                       fontWeight: 500,
+                      lineHeight: 1.5,
                     }}
                   >
                     <CheckCircle2
-                      size={20}
+                      size={19}
                       color="var(--success)"
-                      style={{ flexShrink: 0 }}
+                      style={{ flexShrink: 0, marginTop: '1px' }}
                     />
                     {item}
                   </li>
@@ -562,31 +611,31 @@ export default function Home() {
               </ul>
             </div>
 
-            {/* Right Side — Feature Visual */}
+            {/* Right Side — Feature Cards */}
             <div
               style={{
                 background: 'linear-gradient(135deg, var(--secondary) 0%, rgba(13,148,136,0.05) 100%)',
                 borderRadius: 'var(--radius-lg)',
-                padding: '3rem',
+                padding: 'clamp(1.5rem, 4vw, 3rem)',
                 border: '1px solid var(--border)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1.5rem',
+                gap: '1.25rem',
               }}
             >
               {[
                 {
-                  icon: <Globe size={24} color="var(--primary)" />,
+                  icon: <Globe size={22} color="var(--primary)" />,
                   title: 'Acceso Universal',
                   desc: 'Plataforma web responsive accesible desde cualquier navegador.',
                 },
                 {
-                  icon: <Zap size={24} color="var(--warning)" />,
+                  icon: <Zap size={22} color="var(--warning)" />,
                   title: 'Rendimiento Ultra Rápido',
                   desc: 'Tiempos de carga menores a 2 segundos, optimizado al máximo.',
                 },
                 {
-                  icon: <Shield size={24} color="var(--success)" />,
+                  icon: <Shield size={22} color="var(--success)" />,
                   title: 'Cumplimiento Normativo',
                   desc: 'Estándares FERPA, COPPA y protección de datos estudiantiles.',
                 },
@@ -597,7 +646,7 @@ export default function Home() {
                     display: 'flex',
                     gap: '1rem',
                     alignItems: 'flex-start',
-                    padding: '1.25rem',
+                    padding: 'clamp(0.875rem, 2vw, 1.25rem)',
                     borderRadius: 'var(--radius-md)',
                     backgroundColor: 'var(--card)',
                     border: '1px solid var(--border)',
@@ -606,9 +655,9 @@ export default function Home() {
                   <div
                     className="flex-center"
                     style={{
-                      width: '44px',
-                      height: '44px',
-                      minWidth: '44px',
+                      width: '42px',
+                      height: '42px',
+                      minWidth: '42px',
                       borderRadius: 'var(--radius-sm)',
                       backgroundColor: 'var(--muted)',
                     }}
@@ -619,8 +668,8 @@ export default function Home() {
                     <h4
                       style={{
                         fontWeight: 700,
-                        fontSize: '1rem',
-                        marginBottom: '0.25rem',
+                        fontSize: '0.95rem',
+                        marginBottom: '0.2rem',
                         color: 'var(--foreground)',
                       }}
                     >
@@ -628,7 +677,7 @@ export default function Home() {
                     </h4>
                     <p
                       style={{
-                        fontSize: '0.875rem',
+                        fontSize: '0.85rem',
                         color: 'var(--muted-foreground)',
                         lineHeight: 1.5,
                       }}
@@ -643,13 +692,13 @@ export default function Home() {
         </section>
 
         {/* ═══ Final CTA ═══ */}
-        <section style={{ paddingBlock: '6rem 8rem' }}>
+        <section style={{ paddingBlock: 'clamp(3.5rem, 8vw, 6rem) clamp(4rem, 10vw, 8rem)' }}>
           <div className="container-7xl" style={{ position: 'relative' }}>
             <div
               style={{
                 backgroundColor: '#0a0f1a',
-                borderRadius: '2.5rem',
-                padding: '5rem 3rem',
+                borderRadius: 'clamp(1.25rem, 4vw, 2.5rem)',
+                padding: 'clamp(3rem, 8vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
                 textAlign: 'center',
                 position: 'relative',
                 overflow: 'hidden',
@@ -661,10 +710,10 @@ export default function Home() {
                   position: 'absolute',
                   top: 0,
                   right: 0,
-                  width: '300px',
-                  height: '300px',
+                  width: '250px',
+                  height: '250px',
                   background: 'var(--primary)',
-                  filter: 'blur(120px)',
+                  filter: 'blur(100px)',
                   opacity: 0.15,
                 }}
               />
@@ -673,20 +722,20 @@ export default function Home() {
                   position: 'absolute',
                   bottom: 0,
                   left: 0,
-                  width: '300px',
-                  height: '300px',
+                  width: '250px',
+                  height: '250px',
                   background: 'var(--accent)',
-                  filter: 'blur(120px)',
+                  filter: 'blur(100px)',
                   opacity: 0.15,
                 }}
               />
 
               <h2
                 style={{
-                  fontSize: 'clamp(2rem, 4vw, 3rem)',
+                  fontSize: 'clamp(1.6rem, 5vw, 3rem)',
                   fontWeight: 900,
                   color: 'white',
-                  marginBottom: '1.5rem',
+                  marginBottom: '1.25rem',
                   position: 'relative',
                   letterSpacing: '-0.03em',
                 }}
@@ -696,9 +745,9 @@ export default function Home() {
               <p
                 style={{
                   color: '#94a3b8',
-                  fontSize: '1.125rem',
-                  marginBottom: '3rem',
-                  maxWidth: '600px',
+                  fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
+                  marginBottom: '2.5rem',
+                  maxWidth: '560px',
                   marginInline: 'auto',
                   lineHeight: 1.6,
                   position: 'relative',
@@ -710,15 +759,15 @@ export default function Home() {
 
               <div
                 className="flex-center"
-                style={{ gap: '1.5rem', flexWrap: 'wrap', position: 'relative' }}
+                style={{ gap: '1rem', flexWrap: 'wrap', position: 'relative' }}
               >
                 <Link
                   href="/login"
                   className="btn-futuristic"
                   style={{
-                    padding: '1.125rem 3rem',
+                    padding: 'clamp(0.875rem, 2vw, 1.125rem) clamp(1.75rem, 5vw, 3rem)',
                     borderRadius: 'var(--radius-md)',
-                    fontSize: '1.125rem',
+                    fontSize: 'clamp(0.95rem, 2vw, 1.125rem)',
                     fontWeight: 800,
                   }}
                 >
@@ -727,12 +776,13 @@ export default function Home() {
                 <Link
                   href="/contact"
                   style={{
-                    padding: '1.125rem 3rem',
+                    padding: 'clamp(0.875rem, 2vw, 1.125rem) clamp(1.75rem, 5vw, 3rem)',
                     borderRadius: 'var(--radius-md)',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.15)',
                     color: 'white',
                     fontWeight: 700,
                     backgroundColor: 'rgba(255,255,255,0.05)',
+                    fontSize: 'clamp(0.95rem, 2vw, 1.125rem)',
                     transition: 'all 0.2s ease',
                   }}
                 >
@@ -748,67 +798,67 @@ export default function Home() {
       <footer
         style={{
           borderTop: '1px solid var(--border)',
-          paddingBlock: '3.5rem',
+          paddingBlock: 'clamp(2rem, 5vw, 3.5rem)',
           backgroundColor: 'rgba(255,255,255,0.6)',
           backdropFilter: 'blur(12px)',
         }}
       >
         <div className="container-7xl">
-          <div className="flex-between" style={{ flexWrap: 'wrap', gap: '2rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1.5rem',
+            }}
+          >
             {/* Brand */}
-            <div className="flex-center" style={{ gap: '0.75rem' }}>
-              <Image src="/logo.png" alt="Luminar Logo" width={24} height={24} />
-              <span style={{ fontWeight: 800, color: 'var(--foreground)' }}>Luminar.</span>
+            <div className="flex-center" style={{ gap: '0.65rem' }}>
+              <Image src="/logo.png" alt="Luminar Logo" width={22} height={22} />
+              <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.95rem' }}>Luminar.</span>
             </div>
 
             {/* Links */}
-            <div className="flex-center" style={{ gap: '2.5rem', flexWrap: 'wrap' }}>
-              <Link
-                href="/about"
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'var(--muted-foreground)',
-                }}
-              >
-                Nosotros
-              </Link>
-              <Link
-                href="/programs"
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'var(--muted-foreground)',
-                }}
-              >
-                Programas
-              </Link>
-              <Link
-                href="/contact"
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'var(--muted-foreground)',
-                }}
-              >
-                Contacto
-              </Link>
-              <Link
-                href="/login"
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'var(--primary)',
-                }}
-              >
-                Portal
-              </Link>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'clamp(1rem, 4vw, 2.5rem)',
+                flexWrap: 'wrap',
+              }}
+            >
+              {[
+                { href: '/about', label: 'Nosotros' },
+                { href: '/programs', label: 'Programas' },
+                { href: '/contact', label: 'Contacto' },
+                { href: '/login', label: 'Portal' },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  style={{
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    color: link.label === 'Portal' ? 'var(--primary)' : 'var(--muted-foreground)',
+                    transition: 'color 0.2s ease',
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
 
             {/* Copyright */}
-            <div style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)', fontWeight: 500 }}>
-              &copy; 2026 Luminar Ecosistema Educativo.
-            </div>
+            <p
+              style={{
+                fontSize: '0.8rem',
+                color: 'var(--muted-foreground)',
+                fontWeight: 500,
+              }}
+            >
+              © 2026 Luminar Ecosistema Educativo.
+            </p>
           </div>
         </div>
       </footer>

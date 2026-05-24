@@ -119,7 +119,7 @@ export default async function PortalDashboard() {
             </div>
 
             {/* ── Two-column lower area */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,2fr) minmax(0,1fr)', gap: '1.5rem', marginBottom: '2rem' }}>
+            <div className="dashboard-lower-grid">
                 {/* Courses Grid */}
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
