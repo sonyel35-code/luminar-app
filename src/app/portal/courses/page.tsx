@@ -71,10 +71,20 @@ export default function PortalCoursesPage() {
                                         <td style={{ padding: '1rem 1.5rem' }}>{c.grade_level || '-'}</td>
                                         <td style={{ padding: '1rem 1.5rem' }}>{c.section || '-'}</td>
                                         <td style={{ padding: '1rem 1.5rem', color: 'var(--muted-foreground)' }}>{c.description || '-'}</td>
-                                        <td style={{ padding: '1rem 1.5rem' }}>
+                                        <td style={{ padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <Link href={`/portal/courses/${c.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--primary)', border: '1px solid var(--primary)', padding: '0.3rem 0.75rem', borderRadius: 'var(--radius-sm)' }}>
                                                 → Abrir Aula
                                             </Link>
+                                            <button
+                                                onClick={() => {
+                                                    const link = `${window.location.origin}/join/${c.id}`;
+                                                    navigator.clipboard.writeText(link);
+                                                    alert(`¡Enlace de invitación copiado para el curso: ${c.name}!\n\nEnvíaselo a los padres para que se registren y matriculen automáticamente: ${link}`);
+                                                }}
+                                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--success-fg)', border: '1px solid var(--success)', padding: '0.3rem 0.75rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'transparent', transition: 'all 0.2s' }}
+                                            >
+                                                🔗 Enlace
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
